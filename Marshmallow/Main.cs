@@ -74,7 +74,7 @@ namespace Marshmallow
                 planetObject.transform.parent = Locator.GetRootTransform();
                 planetObject.transform.position = primayBody.gameObject.transform.position + body.Config.Position.ToVector3();
                 planetObject.SetActive(true);
-                OrbitlineBuilder.Make(body.Object, body.Object.GetComponent<AstroObject>());
+                helper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, body.Object.GetComponent<AstroObject>()));
             }
 
         }
