@@ -47,7 +47,7 @@ namespace Marshmallow.Atmosphere
                 image = ImageUtilities.TintImage(image, config.TopCloudTint.ToColor32());
                 material.SetTexture("_CapTex", image);
             }
-            
+
 
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
             topRT.SetValue("_localAxis", Vector3.up);

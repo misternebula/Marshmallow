@@ -22,7 +22,8 @@ namespace Marshmallow.Body
             SS.radius = config.AtmoEndSize + 10;
             SS.center = Vector3.zero;
 
-            /*OWTriggerVolume trigVol = */sectorGO.AddComponent<OWTriggerVolume>();
+            /*OWTriggerVolume trigVol = */
+            sectorGO.AddComponent<OWTriggerVolume>();
 
             Sector S = sectorGO.AddComponent<Sector>();
             S.SetValue("_name", Sector.Name.Unnamed);

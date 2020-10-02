@@ -1,5 +1,4 @@
-﻿using Marshmallow.External;
-using OWML.ModHelper.Events;
+﻿using OWML.ModHelper.Events;
 using UnityEngine;
 using Logger = Marshmallow.Utility.Logger;
 

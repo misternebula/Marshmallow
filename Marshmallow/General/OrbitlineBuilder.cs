@@ -1,9 +1,4 @@
-﻿using Marshmallow.Utility;
-using OWML.ModHelper.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using OWML.ModHelper.Events;
 using UnityEngine;
 using Logger = Marshmallow.Utility.Logger;
 

@@ -24,7 +24,8 @@ namespace Marshmallow.Atmosphere
             SS.pointChecksOnly = true;
             SS.radius = config.TopCloudSize;
 
-            /*OWTriggerVolume trigvol = */rulesetGO.AddComponent<OWTriggerVolume>();
+            /*OWTriggerVolume trigvol = */
+            rulesetGO.AddComponent<OWTriggerVolume>();
 
             PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
             PR.SetValue("_altitudeFloor", config.GroundSize);

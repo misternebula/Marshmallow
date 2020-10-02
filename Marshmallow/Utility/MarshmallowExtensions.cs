@@ -1,27 +1,18 @@
-﻿using Newtonsoft.Json.Linq;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Marshmallow.Utility
 {
     public static class MarshmallowExtensions
     {
-        public static Vector3 ToVector3(this JArray ja)
+        public static MVector3 ToMVector3(this Vector3 vector3)
         {
-            var array = (JArray)ja;
-            var items = array.Select(jv => (float)jv).ToArray();
-            var output = new Vector3(items[0], items[1], items[2]);
-
-            return output;
+            return new MVector3(vector3.x, vector3.y, vector3.z);
         }
 
-        public static Color32 ToColor32(this JArray ja)
+        public static T GetSetting<T>(this Dictionary<string, object> dict, string settingName)
         {
-            var array = (JArray)ja;
-            var items = array.Select(jv => (byte)jv).ToArray();
-            var output = new Color32(items[0], items[1], items[2], items[3]);
-
-            return output;
+            return (T)dict[settingName];
         }
     }
 }

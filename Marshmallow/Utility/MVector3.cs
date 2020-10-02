@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Marshmallow.Utility
 {
@@ -19,6 +15,14 @@ namespace Marshmallow.Utility
         public float Y { get; }
         public float Z { get; }
 
-        public Vector3 ToVector3() => new Vector3(X, Y, Z);
+        public static implicit operator MVector3(Vector3 vec)
+        {
+            return new MVector3(vec.x, vec.y, vec.z);
+        }
+
+        public static implicit operator Vector3(MVector3 vec)
+        {
+            return new Vector3(vec.X, vec.Y, vec.Z);
+        }
     }
 }
