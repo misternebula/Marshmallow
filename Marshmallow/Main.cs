@@ -69,15 +69,13 @@ namespace Marshmallow
 
             foreach (var body in BodyList)
             {
-                var planetObject = GenerateBody(body.Config);
+                var planetObject = GenerateBody(body);
 
                 var primayBody = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(body.Config.PrimaryBody));
 
                 planetObject.transform.parent = Locator.GetRootTransform();
                 planetObject.transform.position = primayBody.gameObject.transform.position + body.Config.Position.ToVector3();
                 planetObject.SetActive(true);
-
-                body.Object = planetObject;
             }
 
             finishNextUpdate = true;
@@ -95,61 +93,63 @@ namespace Marshmallow
             }
         }
 
-        public static GameObject GenerateBody(IPlanetConfig config)
+        public static GameObject GenerateBody(MarshmallowBody body)
         {
-            Logger.Log("Begin generation sequence of [" + config.Name + "] ...", Logger.LogType.Log);
+            Logger.Log("Begin generation sequence of [" + body.Config.Name + "] ...", Logger.LogType.Log);
 
-            var body = new GameObject(config.Name);
-            body.SetActive(false);
+            var go = new GameObject(body.Config.Name);
+            go.SetActive(false);
 
-            GeometryBuilder.Make(body, config.GroundSize);
+            GeometryBuilder.Make(go, body.Config.GroundSize);
 
-            var outputTuple = BaseBuilder.Make(body, Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(config.PrimaryBody)), config);
+            var outputTuple = BaseBuilder.Make(go, Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(body.Config.PrimaryBody)), body.Config);
 
             var owRigidbody = (OWRigidbody)outputTuple.Items[1];
-            RFVolumeBuilder.Make(body, owRigidbody, config);
+            RFVolumeBuilder.Make(go, owRigidbody, body.Config);
 
-            if (config.HasMapMarker)
+            if (body.Config.HasMapMarker)
             {
-                MarkerBuilder.Make(body, config);
+                MarkerBuilder.Make(go, body.Config);
             }
 
-            var sector = MakeSector.Make(body, owRigidbody, config);
+            var sector = MakeSector.Make(go, owRigidbody, body.Config);
 
-            if (config.HasClouds)
+            if (body.Config.HasClouds)
             {
-                CloudsBuilder.Make(body, sector, config);
-                SunOverrideBuilder.Make(body, sector, config);
+                CloudsBuilder.Make(go, sector, body.Config);
+                SunOverrideBuilder.Make(go, sector, body.Config);
             }
 
-            AirBuilder.Make(body, config.TopCloudSize / 2, config.HasRain);
+            AirBuilder.Make(go, body.Config.TopCloudSize / 2, body.Config.HasRain);
 
-            if (config.HasWater)
+            if (body.Config.HasWater)
             {
-                WaterBuilder.Make(body, sector, config);
+                WaterBuilder.Make(go, sector, body.Config);
             }
 
-            EffectsBuilder.Make(body, sector);
-            VolumesBuilder.Make(body, config);
-            AmbientLightBuilder.Make(body, sector, config);
-            AtmosphereBuilder.Make(body, config);
+            EffectsBuilder.Make(go, sector);
+            VolumesBuilder.Make(go, body.Config);
+            AmbientLightBuilder.Make(go, sector, body.Config);
+            AtmosphereBuilder.Make(go, body.Config);
 
-            Logger.Log("Generation of [" + config.Name + "] completed.", Logger.LogType.Log);
+            Logger.Log("Generation of [" + body.Config.Name + "] completed.", Logger.LogType.Log);
 
-            return body;
+            body.Object = go;
+
+            return go;
         }
 
-        public static void CreateBody(IPlanetConfig config)
+        public static void CreateBody(MarshmallowBody body)
         {
-            var planet = Main.GenerateBody(config);
+            var planet = GenerateBody(body);
 
             planet.transform.parent = Locator.GetRootTransform();
-            planet.transform.position = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(config.PrimaryBody)).gameObject.transform.position + config.Position.ToVector3();
+            planet.transform.position = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(body.Config.PrimaryBody)).gameObject.transform.position + body.Config.Position.ToVector3();
             planet.SetActive(true);
 
             planet.GetComponent<OWRigidbody>().SetVelocity(Locator.GetCenterOfTheUniverse().GetOffsetVelocity());
 
-            var primary = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(config.PrimaryBody)).GetAttachedOWRigidbody();
+            var primary = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(body.Config.PrimaryBody)).GetAttachedOWRigidbody();
             var initialMotion = primary.GetComponent<InitialMotion>();
             if (initialMotion != null)
             {
@@ -192,9 +192,11 @@ namespace Marshmallow
                 LightTint = new MColor32(((Color32)config["LightTint"]).r, ((Color32)config["LightTint"]).g, ((Color32)config["LightTint"]).b, ((Color32)config["LightTint"]).a),
             };
 
-            Main.BodyList.Add(new MarshmallowBody(planetConfig));
+            var body = new MarshmallowBody(planetConfig);
 
-            Main.helper.Events.Unity.RunWhen(() => Locator.GetCenterOfTheUniverse() != null, () => Main.CreateBody(planetConfig));
+            Main.BodyList.Add(body);
+
+            Main.helper.Events.Unity.RunWhen(() => Locator.GetCenterOfTheUniverse() != null, () => Main.CreateBody(body));
         }
 
         public GameObject GetPlanet(string name)
