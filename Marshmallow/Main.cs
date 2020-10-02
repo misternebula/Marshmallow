@@ -21,8 +21,6 @@ namespace Marshmallow
 
         public static List<MarshmallowBody> BodyList = new List<MarshmallowBody>();
 
-        private bool finishNextUpdate = false;
-
         public override object GetApi()
         {
             return new MarshmallowApi();
@@ -78,19 +76,7 @@ namespace Marshmallow
                 planetObject.SetActive(true);
             }
 
-            finishNextUpdate = true;
-        }
-
-        void Update()
-        {
-            if (finishNextUpdate)
-            {
-                foreach (var body in BodyList)
-                {
-                    OrbitlineBuilder.Make(body.Object, body.Object.GetComponent<AstroObject>());
-                }
-                finishNextUpdate = false;
-            }
+            helper.Events.Unity.FireOnNextUpdate(() => BodyList.ForEach(x => OrbitlineBuilder.Make(x.Object, x.Object.GetComponent<AstroObject>())));
         }
 
         public static GameObject GenerateBody(MarshmallowBody body)
@@ -156,6 +142,8 @@ namespace Marshmallow
                 planet.GetComponent<OWRigidbody>().AddVelocityChange(-initialMotion.GetInitVelocity());
                 planet.GetComponent<OWRigidbody>().AddVelocityChange(primary.GetVelocity());
             }
+
+            helper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, body.Object.GetComponent<AstroObject>()));
         }
     }
 
